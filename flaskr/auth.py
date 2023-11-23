@@ -9,7 +9,7 @@ from flaskr.db import get_db
 
 bp = Blueprint('auth',__name__,url_prefix='/auth')
 
-@bp.route('/route', methods = ('GETS','POST'))
+@bp.route('/register', methods = ('GET','POST'))
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -28,6 +28,7 @@ def register():
                     "INSERT INTO user (usermame, password) VALUES (?,?) ",
                     (username, generate_password_hash(password))
                 )
+                db.commit()
             except db.IntegrityError:
                 error = f"User {username} is already registered"
             else:
@@ -61,9 +62,9 @@ def login():
         
         flash(error)
     
-    return render_template('auth/loging.html')
+    return render_template('auth/login.html')
 
-bp.before_app_request
+@bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
 
